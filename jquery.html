@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Lista de Tarefas</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  </head>
+  <body>
+    <h1>Lista de Tarefas</h1>
+    <input type="text" id="task" placeholder="Adicionar uma nova tarefa" />
+    <button id="addTask">Adicionar</button>
+    <ul id="taskList"></ul>
+
+    <script>
+      // Array para armazenar tarefas
+      let tasks = [];
+
+      // Função para adicionar uma tarefa
+      function addTask(taskText) {
+        tasks.push({ text: taskText, done: false });
+        updateTaskList();
+      }
+
+      // Função para atualizar a lista de tarefas
+      function updateTaskList() {
+        const taskList = $("#taskList");
+        taskList.empty();
+        tasks.forEach((task, index) => {
+          const listItem = $("<li>");
+          listItem.text(task.text);
+          if (task.done) {
+            listItem.addClass("done");
+          }
+          listItem.append(`<button class="complete" data-index="${index}">Concluir</button>`);
+          listItem.append(`<button class="delete" data-index="${index}">Excluir</button>`);
+          taskList.append(listItem);
+        });
+      }
+
+      function completeTask(index) {
+        tasks[index].done = true;
+        updateTaskList();
+      }
+
+      function deleteTask(index) {
+        tasks.splice(index, 1);
+        updateTaskList();
+      }
+
+      $("#addTask").on("click", function () {
+        const taskText = $("#task").val();
+        if (taskText.trim() !== "") {
+          addTask(taskText);
+          $("#task").val("");
+        }
+      });
+
+      $("#taskList").on("click", ".complete", function () {
+        const index = $(this).data("index");
+        completeTask(index);
+      });
+
+      $("#taskList").on("click", ".delete", function () {
+        const index = $(this).data("index");
+        deleteTask(index);
+      });
+    </script>
+    <style>
+      .done {
+        text-decoration: line-through;
+      }
+    </style>
+  </body>
+</html>

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Lista de Filmes</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  </head>
+  <body>
+    <h1>Lista de Filmes</h1>
+    <ul id="movieList"></ul>
+    <input type="text" id="title" placeholder="Título do Filme" />
+    <input type="text" id="director" placeholder="Diretor do Filme" />
+    <input type="number" id="year" placeholder="Ano de Lançamento" />
+    <button id="addMovie">Adicionar Filme</button>
+
+    <script>
+      // Função para exibir a lista de filmes
+      function displayMovieList(movies) {
+        const movieList = $("#movieList");
+        movieList.empty();
+        movies.forEach((movie) => {
+          const listItem = $("<li>");
+          listItem.text(`Título: ${movie.title}, Diretor: ${movie.director}, Ano: ${movie.year}`);
+          movieList.append(listItem);
+        });
+      }
+
+      // Carregar o arquivo JSON
+      $.ajax({
+        url: "movies.json",
+        dataType: "json",
+        success: function (data) {
+          displayMovieList(data);
+        },
+      });
+
+      // Adicionar um novo filme
+      $("#addMovie").on("click", function () {
+        const title = $("#title").val();
+        const director = $("#director").val();
+        const year = $("#year").val();
+        if (title && director && year) {
+          const newMovie = {
+            title: title,
+            director: director,
+            year: parseInt(year),
+          };
+          $.ajax({
+            url: "movies.json",
+            type: "GET",
+            dataType: "json",
+            success: function (data) {
+              data.push(newMovie);
+              $.ajax({
+                url: "movies.json",
+                type: "PUT",
+                data: JSON.stringify(data),
+                contentType: "application/json",
+                success: function () {
+                  displayMovieList(data);
+                  $("#title").val("");
+                  $("#director").val("");
+                  $("#year").val("");
+                },
+              });
+            },
+          });
+        }
+      });
+    </script>
+  </body>
+</html>
